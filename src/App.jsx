@@ -410,11 +410,11 @@ export default function KShowdown() {
               const GAME_H = TEAM_H * 2 + GAME_GAP;
               const totalH = GAME_H * 8 + MATCHUP_GAP * 7;
               return (
-              <div style={{ display:"flex", gap:10, minWidth:780, alignItems:"stretch", height:totalH }}>
+              <div style={{ display:"flex", gap:10, minWidth:1050, alignItems:"stretch", height:totalH }}>
                 {rounds.map((games, ri) => {
                   const gamesInRound = games.length;
                   const slotH = totalH / gamesInRound;
-                  return (<div key={ri} style={{ flex:1, minWidth:120, display:"flex", flexDirection:"column" }}>
+                  return (<div key={ri} style={{ flex:1, minWidth:ri===0?170:150, display:"flex", flexDirection:"column" }}>
                     <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:"1px", color:"#C4A0C4", marginBottom:8, textAlign:"center", height:32, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontWeight:700, flexShrink:0 }}>{ROUND_NAMES[ri]}<br/><span style={{ color:"#A78BFA", fontSize:9 }}>+{ROUND_PTS[ri]}pt</span></div>
                     <div style={{ display:"flex", flexDirection:"column", flex:1 }}>
                       {games.map((game, gi) => (
