@@ -3,11 +3,11 @@ import { supabase } from "./supabase";
 
 const PLAYERS = ["J$", "K$", "Nydda", "H20", "Chaco"];
 const COLORS = {
-  "J$":    { bg: "#FF6B6B", text: "#fff", glow: "rgba(255,107,107,.4)" },
-  "K$":    { bg: "#FFD93D", text: "#111", glow: "rgba(255,217,61,.4)" },
-  "Nydda": { bg: "#6BCB77", text: "#fff", glow: "rgba(107,203,119,.4)" },
-  "H20":   { bg: "#4D96FF", text: "#fff", glow: "rgba(77,150,255,.4)" },
-  "Chaco": { bg: "#FF6FC8", text: "#fff", glow: "rgba(255,111,200,.4)" },
+  "J$":    { bg: "#6B8CFF", text: "#fff", glow: "rgba(107,140,255,.35)" },
+  "K$":    { bg: "#FF9B5E", text: "#fff", glow: "rgba(255,155,94,.35)" },
+  "Nydda": { bg: "#7BC88F", text: "#fff", glow: "rgba(123,200,143,.35)" },
+  "H20":   { bg: "#FF7EB3", text: "#fff", glow: "rgba(255,126,179,.35)" },
+  "Chaco": { bg: "#A78BFA", text: "#fff", glow: "rgba(167,139,250,.35)" },
 };
 const ROUND_NAMES = ["R64", "R32", "Sweet 16", "Elite 8", "Final Four", "\u{1F3C6}"];
 const ROUND_PTS   = [1, 2, 4, 8, 16, 32];
@@ -78,6 +78,36 @@ function initPicks() {
   const p = {};
   PLAYERS.forEach(pl => { p[pl] = {}; });
   return p;
+}
+
+function Sparkles() {
+  const [stars] = useState(() =>
+    Array.from({ length: 35 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 3 + Math.random() * 6,
+      delay: Math.random() * 5,
+      dur: 2 + Math.random() * 3,
+      drift: -10 + Math.random() * 20,
+    }))
+  );
+  return (
+    <div style={{ position:"fixed", inset:0, pointerEvents:"none", zIndex:0, overflow:"hidden" }}>
+      {stars.map(s => (
+        <div key={s.id} style={{
+          position:"absolute", left:`${s.x}%`, top:`${s.y}%`,
+          width:s.size, height:s.size,
+          animation:`twinkle ${s.dur}s ease-in-out ${s.delay}s infinite, drift ${s.dur*2}s ease-in-out ${s.delay}s infinite`,
+        }}>
+          <svg viewBox="0 0 24 24" width={s.size} height={s.size} fill="none">
+            <path d="M12 2l2.1 6.5H21l-5.6 4.1 2.1 6.5L12 15l-5.5 4.1 2.1-6.5L3 8.5h6.9z"
+              fill={["#FFD6E8","#E8D6FF","#D6E8FF","#FFE8D6","#D6FFE8"][s.id % 5]} opacity={0.5} />
+          </svg>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function KShowdown() {
@@ -200,12 +230,12 @@ export default function KShowdown() {
   }
 
   function burst() {
-    const clrs = ["#FF6B6B","#FFD93D","#6BCB77","#4D96FF","#FF6FC8"];
-    setConfetti(Array.from({ length: 22 }, (_, i) => ({
+    const clrs = ["#FFD6E8","#E8D6FF","#D6E8FF","#FFE8D6","#D6FFE8","#FF7EB3","#A78BFA","#6B8CFF"];
+    setConfetti(Array.from({ length: 28 }, (_, i) => ({
       id: Date.now() + i, x: 5 + Math.random() * 90,
-      c: clrs[i % 5], d: Math.random() * 0.35, circle: Math.random() > 0.5,
+      c: clrs[i % clrs.length], d: Math.random() * 0.4, star: Math.random() > 0.4,
     })));
-    setTimeout(() => setConfetti([]), 1400);
+    setTimeout(() => setConfetti([]), 1600);
   }
 
   function showToast(msg) {
@@ -220,88 +250,102 @@ export default function KShowdown() {
   PLAYERS.forEach(p => { scores[p] = Object.keys(picks[p] || {}).length; });
   const sorted = [...PLAYERS].sort((a, b) => scores[b] - scores[a]);
   const maxSc  = Math.max(...Object.values(scores), 1);
-  const medals = ["\u{1F947}","\u{1F948}","\u{1F949}","4\uFE0F\u20E3","5\uFE0F\u20E3"];
+  const medals = ["\u{1F451}","\u{2728}","\u{1F338}","\u{1F33C}","\u{1F33A}"];
 
   return (
-    <div style={{ minHeight:"100vh", background:"#080810", color:"#fff", fontFamily:"'Bebas Neue',Impact,sans-serif", overflowX:"hidden", position:"relative" }}>
+    <div style={{ minHeight:"100vh", background:"#FFF8F6", color:"#3D2B3D", fontFamily:"'Quicksand',sans-serif", overflowX:"hidden", position:"relative" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@500;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&family=DM+Sans:wght@500;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
-        ::-webkit-scrollbar{width:3px;height:3px;}
-        ::-webkit-scrollbar-thumb{background:#FFD93D44;border-radius:2px;}
-        @keyframes fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(140px) rotate(540deg);opacity:0}}
-        @keyframes sh{0%,100%{background-position:0%}50%{background-position:100%}}
-        @keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes toast{0%,85%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-8px)}}
+        ::-webkit-scrollbar{width:4px;height:4px;}
+        ::-webkit-scrollbar-thumb{background:#E8D6FF;border-radius:4px;}
+        ::-webkit-scrollbar-track{background:#FFF0F5;}
+        @keyframes fall{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}100%{transform:translateY(160px) rotate(720deg) scale(0);opacity:0}}
+        @keyframes sh{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+        @keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes toast{0%,80%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
-        .tb{cursor:pointer;border:none;font-family:'Bebas Neue',Impact,sans-serif;transition:all .14s;}
-        .tb:hover{filter:brightness(1.2);} .tb:active{transform:scale(.95);}
-        .tr{cursor:pointer;border:none;transition:all .12s;font-family:'DM Sans',sans-serif;}
-        .tr:hover{transform:translateX(2px);filter:brightness(1.12);} .tr:active{transform:scale(.97);}
+        @keyframes twinkle{0%,100%{opacity:.15;transform:scale(.6)}50%{opacity:.6;transform:scale(1.1)}}
+        @keyframes drift{0%,100%{transform:translateY(0px)}50%{transform:translateY(-12px)}}
+        @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+        .tb{cursor:pointer;border:none;font-family:'Quicksand',sans-serif;font-weight:700;transition:all .18s ease;}
+        .tb:hover{transform:translateY(-2px);} .tb:active{transform:scale(.95);}
+        .tr{cursor:pointer;border:none;transition:all .15s ease;font-family:'DM Sans',sans-serif;}
+        .tr:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.06)!important;} .tr:active{transform:scale(.97);}
+        .glass{background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.8);box-shadow:0 2px 16px rgba(0,0,0,.04);}
       `}</style>
 
-      {confetti.map(c => <div key={c.id} style={{ position:"fixed", top:"35%", left:`${c.x}%`, width:8, height:8, borderRadius:c.circle?"50%":"2px", background:c.c, animation:`fall .95s ease-in ${c.d}s both`, zIndex:9999, pointerEvents:"none" }} />)}
-      {toast && <div style={{ position:"fixed", top:20, left:"50%", background:"#1a1a2e", border:`1px solid ${cl.bg}`, borderRadius:8, padding:"8px 20px", fontFamily:"'DM Sans',sans-serif", fontSize:13, color:cl.bg, zIndex:9998, whiteSpace:"nowrap", animation:"toast 2.2s ease forwards", boxShadow:`0 4px 20px ${cl.glow}` }}>{toast}</div>}
+      <Sparkles />
 
-      <div style={{ height:4, background:"linear-gradient(90deg,#FF6B6B,#FFD93D,#6BCB77,#4D96FF,#FF6FC8,#FF6B6B)", backgroundSize:"300%", animation:"sh 3s linear infinite" }} />
+      {confetti.map(c => c.star ? (
+        <svg key={c.id} viewBox="0 0 24 24" style={{ position:"fixed", top:"30%", left:`${c.x}%`, width:12, height:12, animation:`fall 1.2s ease-in ${c.d}s both`, zIndex:9999, pointerEvents:"none" }}>
+          <path d="M12 2l2.1 6.5H21l-5.6 4.1 2.1 6.5L12 15l-5.5 4.1 2.1-6.5L3 8.5h6.9z" fill={c.c} />
+        </svg>
+      ) : (
+        <div key={c.id} style={{ position:"fixed", top:"30%", left:`${c.x}%`, width:8, height:8, borderRadius:"50%", background:c.c, animation:`fall 1.2s ease-in ${c.d}s both`, zIndex:9999, pointerEvents:"none" }} />
+      ))}
 
-      <div style={{ padding:"18px 20px 4px", textAlign:"center", position:"relative" }}>
-        <div style={{ fontSize:"clamp(44px,11vw,90px)", letterSpacing:"6px", lineHeight:1, background:"linear-gradient(90deg,#FFD93D,#FF6B6B,#FF6FC8,#FFD93D)", backgroundSize:"300%", animation:"sh 4s linear infinite", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>K$ SHOWDOWN</div>
-        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:"clamp(10px,2.5vw,13px)", letterSpacing:"7px", color:"#333", marginTop:4 }}>MARCH MADNESS 2026</div>
-        <div style={{ position:"absolute", top:18, right:20, display:"flex", alignItems:"center", gap:6, fontFamily:"'DM Sans',sans-serif", fontSize:11 }}>
-          {syncing ? (<><div style={{ width:8, height:8, borderRadius:"50%", border:"2px solid #FFD93D", borderTopColor:"transparent", animation:"spin .7s linear infinite" }} /><span style={{ color:"#555" }}>syncing</span></>) : (<><div style={{ width:8, height:8, borderRadius:"50%", background:online?"#6BCB77":"#FF6B6B", animation:"pulse 2s infinite" }} /><span style={{ color:online?"#6BCB77":"#FF6B6B" }}>{online?"live":"offline"}</span></>)}
+      {toast && <div style={{ position:"fixed", top:20, left:"50%", background:"rgba(255,255,255,.9)", backdropFilter:"blur(12px)", border:`2px solid ${cl.bg}44`, borderRadius:50, padding:"10px 24px", fontFamily:"'Quicksand',sans-serif", fontSize:14, fontWeight:700, color:cl.bg, zIndex:9998, whiteSpace:"nowrap", animation:"toast 2.2s ease forwards", boxShadow:`0 4px 24px ${cl.glow}` }}>{toast}</div>}
+
+      <div style={{ height:3, background:"linear-gradient(90deg,#6B8CFF,#FF9B5E,#7BC88F,#FF7EB3,#A78BFA,#6B8CFF)", backgroundSize:"300%", animation:"sh 4s linear infinite", borderRadius:"0 0 2px 2px" }} />
+
+      <div style={{ padding:"24px 20px 8px", textAlign:"center", position:"relative", zIndex:1 }}>
+        <div style={{ fontSize:"clamp(40px,10vw,80px)", fontWeight:800, letterSpacing:"3px", lineHeight:1, background:"linear-gradient(90deg,#FF7EB3,#A78BFA,#6B8CFF,#FF7EB3)", backgroundSize:"300%", animation:"sh 5s linear infinite", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>K$ Showdown</div>
+        <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:"clamp(10px,2.5vw,12px)", letterSpacing:"5px", color:"#C4A0C4", marginTop:6, textTransform:"uppercase" }}>March Madness 2026</div>
+        <div style={{ position:"absolute", top:24, right:20, display:"flex", alignItems:"center", gap:6, fontFamily:"'DM Sans',sans-serif", fontSize:11 }}>
+          {syncing ? (<><div style={{ width:8, height:8, borderRadius:"50%", border:"2px solid #A78BFA", borderTopColor:"transparent", animation:"spin .7s linear infinite" }} /><span style={{ color:"#C4A0C4" }}>syncing</span></>) : (<><div style={{ width:8, height:8, borderRadius:"50%", background:online?"#7BC88F":"#FF7EB3", animation:"pulse 2s infinite" }} /><span style={{ color:online?"#7BC88F":"#FF7EB3" }}>{online?"live":"offline"}</span></>)}
         </div>
       </div>
 
       {liveGames.length > 0 && (
-        <div style={{ padding:"10px 20px", overflowX:"auto", borderBottom:"1px solid #111", whiteSpace:"nowrap" }}>
+        <div style={{ padding:"8px 20px", overflowX:"auto", whiteSpace:"nowrap", zIndex:1, position:"relative" }}>
           <div style={{ display:"inline-flex", gap:8 }}>
             {liveGames.map((g, i) => {
               const comp=g.competitions?.[0], h=comp?.competitors?.find(t=>t.homeAway==="home"), a=comp?.competitors?.find(t=>t.homeAway==="away"), live=g.status?.type?.state==="in";
-              return (<div key={i} style={{ display:"inline-block", background:live?"rgba(255,107,107,.1)":"rgba(255,255,255,.04)", border:live?"1px solid rgba(255,107,107,.4)":"1px solid #111", borderRadius:8, padding:"6px 12px", fontFamily:"'DM Sans',sans-serif", fontSize:12, minWidth:100 }}>
-                {live && <div style={{ color:"#FF6B6B", fontSize:9, letterSpacing:2, marginBottom:2 }}>● LIVE</div>}
-                <div style={{ display:"flex", justifyContent:"space-between", gap:8 }}><span style={{ color:"#555" }}>{a?.team?.abbreviation}</span><b>{a?.score||"-"}</b></div>
-                <div style={{ display:"flex", justifyContent:"space-between", gap:8 }}><span style={{ color:"#555" }}>{h?.team?.abbreviation}</span><b>{h?.score||"-"}</b></div>
+              return (<div key={i} className="glass" style={{ display:"inline-block", borderRadius:12, padding:"6px 14px", fontFamily:"'DM Sans',sans-serif", fontSize:11, minWidth:90, border:live?"1.5px solid #FF7EB366":"1px solid rgba(255,255,255,.8)" }}>
+                {live && <div style={{ color:"#FF7EB3", fontSize:8, letterSpacing:2, marginBottom:2, fontWeight:700 }}>LIVE</div>}
+                <div style={{ display:"flex", justifyContent:"space-between", gap:8 }}><span style={{ color:"#A08BA0" }}>{a?.team?.abbreviation}</span><b style={{ color:"#3D2B3D" }}>{a?.score||"-"}</b></div>
+                <div style={{ display:"flex", justifyContent:"space-between", gap:8 }}><span style={{ color:"#A08BA0" }}>{h?.team?.abbreviation}</span><b style={{ color:"#3D2B3D" }}>{h?.score||"-"}</b></div>
               </div>);
             })}
           </div>
         </div>
       )}
 
-      <div style={{ padding:"14px 20px 6px", display:"flex", gap:8, flexWrap:"wrap", justifyContent:"center" }}>
-        {PLAYERS.map(p => { const c=COLORS[p],active=ap===p; return (<button key={p} className="tb" onClick={()=>setAp(p)} style={{ background:active?c.bg:"rgba(255,255,255,.06)", color:active?c.text:"#444", border:active?`2px solid ${c.bg}`:"2px solid transparent", borderRadius:40, padding:"8px 22px", fontSize:"clamp(15px,4vw,21px)", letterSpacing:"2px", transform:active?"translateY(-3px) scale(1.06)":"scale(1)", boxShadow:active?`0 6px 24px ${c.glow}`:"none" }}>{p}</button>); })}
+      <div style={{ padding:"16px 20px 8px", display:"flex", gap:10, flexWrap:"wrap", justifyContent:"center", zIndex:1, position:"relative" }}>
+        {PLAYERS.map(p => { const c=COLORS[p],active=ap===p; return (<button key={p} className="tb" onClick={()=>setAp(p)} style={{ background:active?c.bg:"rgba(255,255,255,.7)", color:active?c.text:"#A08BA0", border:active?"2px solid transparent":"2px solid #F0E6F0", borderRadius:50, padding:"10px 24px", fontSize:"clamp(14px,3.5vw,18px)", letterSpacing:"1px", transform:active?"translateY(-3px)":"translateY(0)", boxShadow:active?`0 6px 24px ${c.glow}`:"0 2px 8px rgba(0,0,0,.04)", backdropFilter:active?"none":"blur(8px)" }}>{p}</button>); })}
       </div>
 
-      <div style={{ display:"flex", padding:"8px 20px 0", gap:4, justifyContent:"center" }}>
-        {["bracket","leaderboard"].map(t => (<button key={t} className="tb" onClick={()=>setTab(t)} style={{ padding:"10px 30px", fontSize:"clamp(13px,3.5vw,18px)", letterSpacing:"3px", background:tab===t?"#FFD93D":"transparent", color:tab===t?"#111":"#333", borderRadius:t==="bracket"?"10px 0 0 0":"0 10px 0 0" }}>{t.toUpperCase()}</button>))}
+      <div style={{ display:"flex", padding:"10px 20px 0", gap:6, justifyContent:"center", zIndex:1, position:"relative" }}>
+        {["bracket","leaderboard"].map(t => (<button key={t} className="tb" onClick={()=>setTab(t)} style={{ padding:"10px 28px", fontSize:"clamp(12px,3vw,16px)", letterSpacing:"2px", background:tab===t?"linear-gradient(135deg,#FF7EB3,#A78BFA)":"rgba(255,255,255,.5)", color:tab===t?"#fff":"#A08BA0", borderRadius:50, border:tab===t?"none":"1.5px solid #F0E6F0", boxShadow:tab===t?"0 4px 16px rgba(167,139,250,.3)":"none" }}>{t.toUpperCase()}</button>))}
       </div>
-      <div style={{ height:2, background:"linear-gradient(90deg,#FFD93D55,#FF6B6B55,#FF6FC855,#4D96FF55)" }} />
+      <div style={{ height:1.5, background:"linear-gradient(90deg,transparent,#E8D6FF,#FFD6E8,#D6E8FF,transparent)", margin:"10px 20px 0", borderRadius:2 }} />
 
       {tab==="bracket" && (
-        <div style={{ padding:"18px 20px" }}>
-          <div style={{ display:"flex", gap:6, marginBottom:18, flexWrap:"wrap", alignItems:"center" }}>
-            {["East","West","South","Midwest"].map(r => (<button key={r} className="tb" onClick={()=>setRegion(r)} style={{ padding:"6px 18px", fontSize:"clamp(11px,3vw,15px)", letterSpacing:"2px", background:region===r?"#FF6B6B":"rgba(255,255,255,.05)", color:region===r?"#fff":"#444", borderRadius:6, border:region===r?"none":"1px solid #111" }}>{r.toUpperCase()}</button>))}
-            <button className="tb" onClick={resetPlayer} style={{ marginLeft:"auto", padding:"6px 14px", fontSize:"clamp(10px,2.5vw,12px)", letterSpacing:"2px", background:"rgba(255,107,107,.12)", color:"#FF6B6B", border:"1px solid rgba(255,107,107,.3)", borderRadius:6 }}>RESET {ap}</button>
+        <div style={{ padding:"18px 20px", position:"relative", zIndex:1 }}>
+          <div style={{ display:"flex", gap:8, marginBottom:18, flexWrap:"wrap", alignItems:"center" }}>
+            {["East","West","South","Midwest"].map(r => (<button key={r} className="tb" onClick={()=>setRegion(r)} style={{ padding:"8px 20px", fontSize:"clamp(11px,2.8vw,14px)", letterSpacing:"1px", background:region===r?"linear-gradient(135deg,#FF7EB3,#FF9B5E)":"rgba(255,255,255,.6)", color:region===r?"#fff":"#A08BA0", borderRadius:50, border:region===r?"none":"1.5px solid #F0E6F0", boxShadow:region===r?"0 3px 12px rgba(255,126,179,.3)":"none" }}>{r}</button>))}
+            <button className="tb" onClick={resetPlayer} style={{ marginLeft:"auto", padding:"7px 16px", fontSize:"clamp(10px,2.5vw,12px)", letterSpacing:"1px", background:"rgba(255,126,179,.08)", color:"#FF7EB3", border:"1.5px solid #FF7EB344", borderRadius:50 }}>Reset {ap}</button>
           </div>
-          <div style={{ fontSize:"clamp(20px,6vw,40px)", letterSpacing:"4px", marginBottom:14, background:"linear-gradient(90deg,#FFD93D,#FF6B6B)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>{region.toUpperCase()} REGION</div>
+          <div style={{ fontSize:"clamp(22px,6vw,38px)", fontWeight:800, letterSpacing:"2px", marginBottom:16, background:"linear-gradient(90deg,#FF7EB3,#A78BFA)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>{region} Region</div>
           <div style={{ overflowX:"auto", paddingBottom:16 }}>
             <div style={{ display:"flex", gap:8, minWidth:700, alignItems:"flex-start" }}>
               {rounds.map((games, ri) => {
                 const gap = Math.pow(2,ri)*74-74+10;
                 return (<div key={ri} style={{ flex:1, minWidth:105, display:"flex", flexDirection:"column" }}>
-                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:9, letterSpacing:"2px", color:"#333", marginBottom:8, textAlign:"center", height:32, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>{ROUND_NAMES[ri]}<br/><span style={{ color:"#FFD93D" }}>+{ROUND_PTS[ri]}pt</span></div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:"1px", color:"#C4A0C4", marginBottom:8, textAlign:"center", height:32, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontWeight:700 }}>{ROUND_NAMES[ri]}<br/><span style={{ color:"#A78BFA", fontSize:9 }}>+{ROUND_PTS[ri]}pt</span></div>
                   <div style={{ display:"flex", flexDirection:"column" }}>
                     {games.map((game, gi) => (
-                      <div key={game.id} style={{ marginTop:gi===0?0:`${gap}px`, display:"flex", flexDirection:"column", gap:2 }}>
+                      <div key={game.id} style={{ marginTop:gi===0?0:`${gap}px`, display:"flex", flexDirection:"column", gap:3 }}>
                         {[game.tA, game.tB].map((team, ti) => {
-                          if (!team) return <div key={ti} style={{ height:34, background:"rgba(255,255,255,.025)", border:"1px dashed #111", borderRadius:6, marginBottom:1 }} />;
+                          if (!team) return <div key={ti} style={{ height:36, background:"rgba(255,255,255,.4)", border:"1.5px dashed #E8D6FF", borderRadius:10, marginBottom:1 }} />;
                           const mp=picks[ap]?.[game.id]===team.n, otherP=PLAYERS.filter(p=>p!==ap&&picks[p]?.[game.id]===team.n);
-                          return (<button key={ti} className="tr" onClick={()=>makePick(region,ri,gi,team.n)} style={{ background:mp?`linear-gradient(90deg,${cl.bg}ee,${cl.bg}88)`:"rgba(255,255,255,.05)", border:mp?`1.5px solid ${cl.bg}`:"1.5px solid #111", borderRadius:6, padding:"5px 8px", display:"flex", alignItems:"center", gap:5, color:mp?cl.text:"#bbb", width:"100%", boxShadow:mp?`0 2px 14px ${cl.glow}`:"none", textAlign:"left", marginBottom:1 }}>
-                            <span style={{ fontSize:9, fontWeight:800, background:mp?"rgba(0,0,0,.25)":"#111", color:mp?cl.text:"#444", borderRadius:3, padding:"1px 5px", minWidth:18, textAlign:"center", fontFamily:"'DM Sans',sans-serif", flexShrink:0 }}>{team.s}</span>
-                            <span style={{ fontSize:"clamp(8px,2vw,11px)", fontWeight:700, flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{team.n}</span>
-                            <div style={{ display:"flex", gap:2, flexShrink:0 }}>{otherP.map(o=><div key={o} title={o} style={{ width:6, height:6, borderRadius:"50%", background:COLORS[o].bg }} />)}</div>
-                            {mp && <span style={{ fontSize:10, flexShrink:0 }}>&#10003;</span>}
+                          return (<button key={ti} className="tr" onClick={()=>makePick(region,ri,gi,team.n)} style={{ background:mp?`linear-gradient(135deg,${cl.bg},${cl.bg}cc)`:"rgba(255,255,255,.65)", border:mp?`2px solid ${cl.bg}`:"1.5px solid #F0E6F0", borderRadius:10, padding:"6px 10px", display:"flex", alignItems:"center", gap:6, color:mp?cl.text:"#5D4B5D", width:"100%", boxShadow:mp?`0 3px 16px ${cl.glow}`:"0 1px 4px rgba(0,0,0,.03)", textAlign:"left", marginBottom:1, backdropFilter:mp?"none":"blur(8px)" }}>
+                            <span style={{ fontSize:9, fontWeight:800, background:mp?"rgba(255,255,255,.25)":"#F5EFF5", color:mp?"#fff":"#A08BA0", borderRadius:5, padding:"2px 6px", minWidth:20, textAlign:"center", fontFamily:"'DM Sans',sans-serif", flexShrink:0 }}>{team.s}</span>
+                            <span style={{ fontSize:"clamp(9px,2vw,12px)", fontWeight:700, flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{team.n}</span>
+                            <div style={{ display:"flex", gap:3, flexShrink:0 }}>{otherP.map(o=><div key={o} title={o} style={{ width:7, height:7, borderRadius:"50%", background:COLORS[o].bg, boxShadow:`0 0 4px ${COLORS[o].glow}` }} />)}</div>
+                            {mp && <span style={{ fontSize:11, flexShrink:0 }}>&#10003;</span>}
                           </button>);
                         })}
                       </div>
@@ -311,53 +355,53 @@ export default function KShowdown() {
               })}
             </div>
           </div>
-          <div style={{ marginTop:18, padding:"13px 16px", background:"rgba(255,255,255,.03)", border:"1px solid #111", borderRadius:12, fontFamily:"'DM Sans',sans-serif", fontSize:12, color:"#444", lineHeight:1.7 }}>
-            <span style={{ color:"#FFD93D", letterSpacing:2, fontSize:10 }}>HOW TO PLAY  </span>
-            Select your name &rarr; tap teams to pick winners left to right. Colored dots = other players' picks. Picks sync live.
-            Points: R64=1 &middot; R32=2 &middot; S16=4 &middot; E8=8 &middot; F4=16 &middot; &#127942;=32
+          <div className="glass" style={{ marginTop:18, padding:"16px 20px", borderRadius:16, fontFamily:"'DM Sans',sans-serif", fontSize:13, color:"#7D6B7D", lineHeight:1.8 }}>
+            <span style={{ color:"#A78BFA", letterSpacing:2, fontSize:11, fontWeight:700 }}>How to Play  </span>
+            Tap your name above, then tap teams to pick your winners from left to right! Colored dots show what your friends picked. Everything syncs live across all your devices.
+            <div style={{ marginTop:6, fontSize:12, color:"#C4A0C4" }}>Points: R64 = 1 &middot; R32 = 2 &middot; Sweet 16 = 4 &middot; Elite 8 = 8 &middot; Final Four = 16 &middot; Champ = 32</div>
           </div>
         </div>
       )}
 
       {tab==="leaderboard" && (
-        <div style={{ padding:"18px 20px" }}>
-          <div style={{ fontSize:"clamp(28px,8vw,58px)", letterSpacing:"4px", marginBottom:22, background:"linear-gradient(90deg,#FFD93D,#FF6FC8)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>&#127942; STANDINGS</div>
+        <div style={{ padding:"18px 20px", position:"relative", zIndex:1 }}>
+          <div style={{ fontSize:"clamp(28px,8vw,52px)", fontWeight:800, letterSpacing:"2px", marginBottom:22, background:"linear-gradient(90deg,#FF7EB3,#A78BFA,#6B8CFF)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>Standings</div>
           {sorted.map((pl, idx) => {
             const c=COLORS[pl], s=scores[pl], pc=Object.keys(picks[pl]||{}).length;
-            return (<div key={pl} style={{ background:"rgba(255,255,255,.03)", border:`2px solid ${idx===0?c.bg:"#111"}`, borderRadius:16, padding:"16px 18px", marginBottom:10, position:"relative", overflow:"hidden", animation:`fu .3s ease ${idx*.07}s both` }}>
-              <div style={{ position:"absolute", left:0, top:0, bottom:0, width:`${(s/maxSc)*100}%`, background:`linear-gradient(90deg,${c.bg}18,transparent)`, transition:"width 1s ease" }} />
+            return (<div key={pl} className="glass" style={{ border:idx===0?`2px solid ${c.bg}66`:"1px solid rgba(255,255,255,.8)", borderRadius:20, padding:"18px 20px", marginBottom:12, position:"relative", overflow:"hidden", animation:`fu .3s ease ${idx*.07}s both` }}>
+              <div style={{ position:"absolute", left:0, top:0, bottom:0, width:`${(s/maxSc)*100}%`, background:`linear-gradient(90deg,${c.bg}15,transparent)`, transition:"width 1s ease" }} />
               <div style={{ display:"flex", alignItems:"center", gap:14, position:"relative" }}>
-                <div style={{ fontSize:"clamp(22px,5vw,34px)" }}>{medals[idx]}</div>
-                <div style={{ width:50, height:50, borderRadius:"50%", background:c.bg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"clamp(12px,3vw,17px)", color:c.text, fontWeight:900, boxShadow:`0 0 22px ${c.glow}`, flexShrink:0, letterSpacing:1 }}>{pl}</div>
+                <div style={{ fontSize:"clamp(20px,5vw,30px)" }}>{medals[idx]}</div>
+                <div style={{ width:48, height:48, borderRadius:"50%", background:`linear-gradient(135deg,${c.bg},${c.bg}bb)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"clamp(12px,3vw,16px)", color:c.text, fontWeight:800, boxShadow:`0 4px 20px ${c.glow}`, flexShrink:0, letterSpacing:1 }}>{pl}</div>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:"clamp(20px,5vw,32px)", letterSpacing:"2px", color:idx===0?c.bg:"#fff" }}>{pl}</div>
-                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:11, color:"#444", marginTop:2 }}>{pc} picks made</div>
+                  <div style={{ fontSize:"clamp(20px,5vw,30px)", fontWeight:800, letterSpacing:"1px", color:idx===0?c.bg:"#3D2B3D" }}>{pl}</div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:12, color:"#A08BA0", marginTop:2 }}>{pc} picks made</div>
                 </div>
                 <div style={{ textAlign:"right" }}>
-                  <div style={{ fontSize:"clamp(28px,7vw,48px)", color:c.bg, lineHeight:1, letterSpacing:"2px" }}>{pc}</div>
-                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:"#333", letterSpacing:2 }}>PICKS</div>
+                  <div style={{ fontSize:"clamp(28px,7vw,44px)", fontWeight:800, color:c.bg, lineHeight:1 }}>{pc}</div>
+                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, color:"#C4A0C4", letterSpacing:2, fontWeight:700 }}>PICKS</div>
                 </div>
               </div>
               {pc>0 && <div style={{ marginTop:12, display:"flex", gap:6, flexWrap:"wrap", fontFamily:"'DM Sans',sans-serif", fontSize:11 }}>
-                {Object.entries(picks[pl]||{}).slice(0,7).map(([k,tn])=><span key={k} style={{ background:`${c.bg}1e`, border:`1px solid ${c.bg}44`, borderRadius:4, padding:"2px 10px", color:c.bg }}>{tn}</span>)}
-                {pc>7&&<span style={{ color:"#333", padding:"2px 0" }}>+{pc-7} more</span>}
+                {Object.entries(picks[pl]||{}).slice(0,7).map(([k,tn])=><span key={k} style={{ background:`${c.bg}15`, border:`1.5px solid ${c.bg}33`, borderRadius:50, padding:"3px 12px", color:c.bg, fontWeight:600 }}>{tn}</span>)}
+                {pc>7&&<span style={{ color:"#C4A0C4", padding:"3px 0" }}>+{pc-7} more</span>}
               </div>}
             </div>);
           })}
-          <div style={{ marginTop:18, padding:"16px 18px", background:"rgba(255,217,61,.05)", border:"1px solid rgba(255,217,61,.18)", borderRadius:14, fontFamily:"'DM Sans',sans-serif", fontSize:13, color:"#666", lineHeight:1.8 }}>
-            <div style={{ color:"#FFD93D", letterSpacing:"3px", fontSize:11, marginBottom:8 }}>&#128197; KEY DATES</div>
-            <div><span style={{ color:"#FF6B6B" }}>First Four:</span> Mar 17&ndash;18</div>
-            <div><span style={{ color:"#FF6B6B" }}>Round of 64:</span> Mar 19&ndash;20</div>
-            <div><span style={{ color:"#FF6B6B" }}>Round of 32:</span> Mar 21&ndash;22</div>
-            <div><span style={{ color:"#FF6B6B" }}>Sweet 16 / Elite 8:</span> Mar 27&ndash;30</div>
-            <div><span style={{ color:"#FF6B6B" }}>Final Four:</span> Apr 4 &middot; Indianapolis</div>
-            <div><span style={{ color:"#FF6B6B" }}>Championship:</span> Apr 6</div>
-            <div style={{ marginTop:10, color:"#444", fontSize:12 }}>Picks sync live across all devices. ESPN scores refresh every 30s.</div>
+          <div className="glass" style={{ marginTop:18, padding:"18px 20px", borderRadius:20, fontFamily:"'DM Sans',sans-serif", fontSize:13, color:"#7D6B7D", lineHeight:1.9 }}>
+            <div style={{ color:"#A78BFA", letterSpacing:"2px", fontSize:12, marginBottom:8, fontWeight:700 }}>Key Dates</div>
+            <div><span style={{ color:"#FF7EB3", fontWeight:700 }}>First Four:</span> Mar 17&ndash;18</div>
+            <div><span style={{ color:"#FF7EB3", fontWeight:700 }}>Round of 64:</span> Mar 19&ndash;20</div>
+            <div><span style={{ color:"#FF7EB3", fontWeight:700 }}>Round of 32:</span> Mar 21&ndash;22</div>
+            <div><span style={{ color:"#FF7EB3", fontWeight:700 }}>Sweet 16 / Elite 8:</span> Mar 27&ndash;30</div>
+            <div><span style={{ color:"#FF7EB3", fontWeight:700 }}>Final Four:</span> Apr 4 &middot; Indianapolis</div>
+            <div><span style={{ color:"#FF7EB3", fontWeight:700 }}>Championship:</span> Apr 6</div>
+            <div style={{ marginTop:10, color:"#C4A0C4", fontSize:12 }}>Picks sync live across all devices. Scores refresh every 30s.</div>
           </div>
         </div>
       )}
 
-      <div style={{ textAlign:"center", padding:"20px", fontFamily:"'DM Sans',sans-serif", fontSize:10, color:"#1a1a1a", letterSpacing:"3px" }}>K$ SHOWDOWN &middot; MARCH MADNESS 2026</div>
+      <div style={{ textAlign:"center", padding:"24px", fontFamily:"'DM Sans',sans-serif", fontSize:10, color:"#E0D0E0", letterSpacing:"3px", position:"relative", zIndex:1 }}>K$ SHOWDOWN &middot; MARCH MADNESS 2026</div>
     </div>
   );
 }
