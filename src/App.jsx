@@ -12,6 +12,79 @@ const COLORS = {
 const ROUND_NAMES = ["R64", "R32", "Sweet 16", "Elite 8", "Final Four", "\u{1F3C6}"];
 const ROUND_PTS   = [1, 2, 4, 8, 16, 32];
 
+const TEAM_DATA = {
+  "Duke": { id: 150, color: "013088" },
+  "Mount St. Mary's": { id: 116, color: "005596" },
+  "Alabama": { id: 333, color: "9e1632" },
+  "Robert Morris": { id: 2523, color: "00214D" },
+  "Baylor": { id: 239, color: "154734" },
+  "VCU": { id: 2670, color: "ffaf00" },
+  "SMU": { id: 2567, color: "354ca1" },
+  "McNeese": { id: 2377, color: "00529C" },
+  "Michigan": { id: 130, color: "00274c" },
+  "UC San Diego": { id: 28, color: "000080" },
+  "Marquette": { id: 269, color: "003366" },
+  "New Mexico": { id: 167, color: "BA0C2F" },
+  "Texas Tech": { id: 2641, color: "cc0000" },
+  "NC State": { id: 152, color: "cc0000" },
+  "Kentucky": { id: 96, color: "0033a0" },
+  "Troy": { id: 2653, color: "AE0210" },
+  "Arizona": { id: 12, color: "0c234b" },
+  "Norfolk St.": { id: 2450, color: "0c8968" },
+  "Memphis": { id: 235, color: "004991" },
+  "Colorado St.": { id: 36, color: "1e4d2b" },
+  "Clemson": { id: 228, color: "f56600" },
+  "Drake": { id: 2181, color: "005596" },
+  "Boise St.": { id: 68, color: "0033a0" },
+  "Akron": { id: 2006, color: "00285e" },
+  "Iowa St.": { id: 66, color: "822433" },
+  "Lipscomb": { id: 288, color: "20366C" },
+  "Mississippi St.": { id: 344, color: "5d1725" },
+  "New Mexico St.": { id: 166, color: "891216" },
+  "Mizzou": { id: 2623, color: "F1B82D" },
+  "Texas": { id: 251, color: "BF5700" },
+  "Tennessee": { id: 2633, color: "ff8200" },
+  "Wofford": { id: 2747, color: "886735" },
+  "Florida": { id: 57, color: "0021a5" },
+  "UConn": { id: 41, color: "0c2340" },
+  "Oklahoma": { id: 201, color: "841617" },
+  "Colorado": { id: 38, color: "CFB87C" },
+  "Maryland": { id: 120, color: "D5002B" },
+  "Grand Canyon": { id: 2253, color: "522398" },
+  "Texas A&M": { id: 2837, color: "500000" },
+  "Yale": { id: 43, color: "004a81" },
+  "Ole Miss": { id: 145, color: "13294b" },
+  "Liberty": { id: 2335, color: "071740" },
+  "Purdue": { id: 2509, color: "CEB888" },
+  "High Point": { id: 2272, color: "330072" },
+  "St. John's": { id: 2599, color: "d10000" },
+  "Omaha": { id: 2437, color: "e3193e" },
+  "American": { id: 44, color: "c41130" },
+  "Gonzaga": { id: 2250, color: "041e42" },
+  "Georgia": { id: 61, color: "ba0c2f" },
+  "Oregon": { id: 2483, color: "007030" },
+  "UCLA": { id: 26, color: "2774ae" },
+  "Morehead St.": { id: 2413, color: "094FA3" },
+  "Kansas": { id: 2305, color: "0051ba" },
+  "Little Rock": { id: 2031, color: "AD0000" },
+  "Illinois": { id: 356, color: "ff5f05" },
+  "Arkansas": { id: 8, color: "a41f35" },
+  "Auburn": { id: 2, color: "002b5c" },
+  "Vanderbilt": { id: 238, color: "866D4B" },
+  "Wisconsin": { id: 275, color: "c4012f" },
+  "Montana": { id: 149, color: "751D4A" },
+};
+
+function getTeamLogo(name) {
+  const t = TEAM_DATA[name];
+  return t ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${t.id}.png` : null;
+}
+
+function getTeamColor(name) {
+  const t = TEAM_DATA[name];
+  return t ? `#${t.color}` : "#999";
+}
+
 const TEAMS = {
   East: [
     ["Duke",1],["Mount St. Mary's",16],["Alabama",8],["Robert Morris",9],
@@ -339,11 +412,13 @@ export default function KShowdown() {
                     {games.map((game, gi) => (
                       <div key={game.id} style={{ marginTop:gi===0?0:`${gap}px`, display:"flex", flexDirection:"column", gap:3 }}>
                         {[game.tA, game.tB].map((team, ti) => {
-                          if (!team) return <div key={ti} style={{ height:36, background:"rgba(255,255,255,.4)", border:"1.5px dashed #E8D6FF", borderRadius:10, marginBottom:1 }} />;
+                          if (!team) return <div key={ti} style={{ height:40, background:"rgba(255,255,255,.4)", border:"1.5px dashed #E8D6FF", borderRadius:10, marginBottom:1 }} />;
                           const mp=picks[ap]?.[game.id]===team.n, otherP=PLAYERS.filter(p=>p!==ap&&picks[p]?.[game.id]===team.n);
-                          return (<button key={ti} className="tr" onClick={()=>makePick(region,ri,gi,team.n)} style={{ background:mp?`linear-gradient(135deg,${cl.bg},${cl.bg}cc)`:"rgba(255,255,255,.65)", border:mp?`2px solid ${cl.bg}`:"1.5px solid #F0E6F0", borderRadius:10, padding:"6px 10px", display:"flex", alignItems:"center", gap:6, color:mp?cl.text:"#5D4B5D", width:"100%", boxShadow:mp?`0 3px 16px ${cl.glow}`:"0 1px 4px rgba(0,0,0,.03)", textAlign:"left", marginBottom:1, backdropFilter:mp?"none":"blur(8px)" }}>
-                            <span style={{ fontSize:9, fontWeight:800, background:mp?"rgba(255,255,255,.25)":"#F5EFF5", color:mp?"#fff":"#A08BA0", borderRadius:5, padding:"2px 6px", minWidth:20, textAlign:"center", fontFamily:"'DM Sans',sans-serif", flexShrink:0 }}>{team.s}</span>
-                            <span style={{ fontSize:"clamp(9px,2vw,12px)", fontWeight:700, flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{team.n}</span>
+                          const tc=getTeamColor(team.n), logo=getTeamLogo(team.n);
+                          return (<button key={ti} className="tr" onClick={()=>makePick(region,ri,gi,team.n)} style={{ background:mp?`linear-gradient(135deg,${cl.bg},${cl.bg}cc)`:"rgba(255,255,255,.65)", border:mp?`2px solid ${cl.bg}`:"1.5px solid #F0E6F0", borderLeft:mp?`2px solid ${cl.bg}`:`3px solid ${tc}`, borderRadius:10, padding:"5px 8px", display:"flex", alignItems:"center", gap:5, color:mp?cl.text:"#5D4B5D", width:"100%", boxShadow:mp?`0 3px 16px ${cl.glow}`:"0 1px 4px rgba(0,0,0,.03)", textAlign:"left", marginBottom:1, backdropFilter:mp?"none":"blur(8px)" }}>
+                            {logo && <img src={logo} alt="" style={{ width:20, height:20, borderRadius:4, objectFit:"contain", flexShrink:0 }} />}
+                            <span style={{ fontSize:9, fontWeight:800, background:mp?"rgba(255,255,255,.25)":"#F5EFF5", color:mp?"#fff":"#A08BA0", borderRadius:5, padding:"2px 5px", minWidth:18, textAlign:"center", fontFamily:"'DM Sans',sans-serif", flexShrink:0 }}>{team.s}</span>
+                            <span style={{ fontSize:"clamp(9px,2vw,11px)", fontWeight:700, flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{team.n}</span>
                             <div style={{ display:"flex", gap:3, flexShrink:0 }}>{otherP.map(o=><div key={o} title={o} style={{ width:7, height:7, borderRadius:"50%", background:COLORS[o].bg, boxShadow:`0 0 4px ${COLORS[o].glow}` }} />)}</div>
                             {mp && <span style={{ fontSize:11, flexShrink:0 }}>&#10003;</span>}
                           </button>);
