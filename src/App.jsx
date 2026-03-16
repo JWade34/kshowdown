@@ -38,7 +38,7 @@ const LEAGUES = {
     sub: "March Madness 2026",
     players: ["Justin", "Nils", "Chris"],
     colors: {
-      "Justin": { bg: "#DC2626", text: "#fff", glow: "rgba(220,38,38,.45)" },
+      "Justin": { bg: "#00FDFD", text: "#0F172A", glow: "rgba(0,253,253,.4)" },
       "Nils":   { bg: "#2563EB", text: "#fff", glow: "rgba(37,99,235,.45)" },
       "Chris":  { bg: "#16A34A", text: "#fff", glow: "rgba(22,163,74,.45)" },
     },
