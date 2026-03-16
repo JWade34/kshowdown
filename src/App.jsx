@@ -65,6 +65,7 @@ const LEAGUES = {
 };
 
 const ROUND_NAMES = ["R64", "R32", "Sweet 16", "Elite 8", "Final Four", "\u{1F3C6}"];
+const ROUND_DATES = ["Mar 20-21", "Mar 22-23", "Mar 27-28", "Mar 29-30", "Apr 5", "Apr 7"];
 const ROUND_PTS   = [1, 2, 4, 8, 16, 32];
 const ALL_PLAYERS = [...LEAGUES.girls.players, ...LEAGUES.guys.players];
 
@@ -462,7 +463,7 @@ export default function KShowdown() {
                   const gamesInRound = games.length;
                   const slotH = totalH / gamesInRound;
                   return (<div key={ri} style={{ flex:1, minWidth:ri===0?170:150, display:"flex", flexDirection:"column" }}>
-                    <div style={{ fontFamily:T.fontBody, fontSize:10, letterSpacing:"1px", color:T.subtle, marginBottom:8, textAlign:"center", height:32, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontWeight:700, flexShrink:0 }}>{ROUND_NAMES[ri]}<br/><span style={{ color:T.accent2, fontSize:9 }}>+{ROUND_PTS[ri]}pt</span></div>
+                    <div style={{ fontFamily:T.fontBody, fontSize:10, letterSpacing:"1px", color:T.subtle, marginBottom:8, textAlign:"center", height:44, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontWeight:700, flexShrink:0 }}>{ROUND_NAMES[ri]}<br/><span style={{ color:T.muted, fontSize:8, letterSpacing:0, fontWeight:500 }}>{ROUND_DATES[ri]}</span><br/><span style={{ color:T.accent2, fontSize:9 }}>+{ROUND_PTS[ri]}pt</span></div>
                     <div style={{ display:"flex", flexDirection:"column", flex:1 }}>
                       {games.map((game, gi) => (
                         <div key={game.id} style={{ height:slotH, display:"flex", flexDirection:"column", justifyContent:"center", gap:GAME_GAP }}>
