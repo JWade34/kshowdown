@@ -38,27 +38,27 @@ const LEAGUES = {
     sub: "March Madness 2026",
     players: ["Justin", "Nils", "Chris"],
     colors: {
-      "Justin": { bg: "#E63946", text: "#fff", glow: "rgba(230,57,70,.4)" },
-      "Nils":   { bg: "#2D6A4F", text: "#fff", glow: "rgba(45,106,79,.4)" },
-      "Chris":  { bg: "#1D3557", text: "#fff", glow: "rgba(29,53,87,.4)" },
+      "Justin": { bg: "#DC2626", text: "#fff", glow: "rgba(220,38,38,.45)" },
+      "Nils":   { bg: "#2563EB", text: "#fff", glow: "rgba(37,99,235,.45)" },
+      "Chris":  { bg: "#16A34A", text: "#fff", glow: "rgba(22,163,74,.45)" },
     },
-    medals: ["\u{1F3C6}","\u{1F94A}","\u{1F525}"],
+    medals: ["\u{1F3C6}","\u{1F948}","\u{1F949}"],
     theme: {
-      bg: "#0A0E17", text: "#E8E8E8", muted: "#6B7280", subtle: "#4B5563",
-      card: "rgba(255,255,255,.06)", cardBorder: "rgba(255,255,255,.08)", cardHover: "#1F2937",
-      accent1: "#E63946", accent2: "#F77F00", accent3: "#2D6A4F",
-      gradientTitle: "linear-gradient(90deg,#E63946,#F77F00,#E63946)",
-      gradientBar: "linear-gradient(90deg,#E63946,#F77F00,#2D6A4F,#1D3557,#E63946)",
-      gradientTab: "linear-gradient(135deg,#E63946,#F77F00)",
-      gradientRegion: "linear-gradient(135deg,#E63946,#F77F00)",
-      gradientRegionTitle: "linear-gradient(90deg,#F77F00,#E63946)",
-      gradientLeaderboard: "linear-gradient(90deg,#E63946,#F77F00,#2D6A4F)",
-      divider: "linear-gradient(90deg,transparent,#E6394633,#F77F0033,#2D6A4F33,transparent)",
-      scrollThumb: "#E6394644", scrollTrack: "#0A0E17",
-      emptyBorder: "#1F2937", emptyBg: "rgba(255,255,255,.03)",
-      teamBg: "rgba(255,255,255,.05)", teamBorder: "#1F2937", seedBg: "#1A1A2E",
-      font: "'Bebas Neue',Impact,sans-serif", fontBody: "'DM Sans',sans-serif",
-      confettiColors: ["#E63946","#F77F00","#2D6A4F","#1D3557","#E8E8E8"],
+      bg: "#0F172A", text: "#F1F5F9", muted: "#94A3B8", subtle: "#475569",
+      card: "rgba(30,41,59,.8)", cardBorder: "rgba(51,65,85,.6)", cardHover: "#334155",
+      accent1: "#DC2626", accent2: "#D4A843", accent3: "#16A34A",
+      gradientTitle: "linear-gradient(90deg,#D4A843,#F5DEB3,#D4A843)",
+      gradientBar: "linear-gradient(90deg,#DC2626,#D4A843,#2563EB,#16A34A,#DC2626)",
+      gradientTab: "linear-gradient(135deg,#D4A843,#B8860B)",
+      gradientRegion: "linear-gradient(135deg,#DC2626,#991B1B)",
+      gradientRegionTitle: "linear-gradient(90deg,#D4A843,#F5DEB3)",
+      gradientLeaderboard: "linear-gradient(90deg,#D4A843,#DC2626,#2563EB)",
+      divider: "linear-gradient(90deg,transparent,#D4A84333,#DC262633,#2563EB33,transparent)",
+      scrollThumb: "#D4A84366", scrollTrack: "#0F172A",
+      emptyBorder: "#334155", emptyBg: "rgba(30,41,59,.5)",
+      teamBg: "rgba(30,41,59,.6)", teamBorder: "#334155", seedBg: "#1E293B",
+      font: "'Barlow Condensed',sans-serif", fontBody: "'Barlow',sans-serif",
+      confettiColors: ["#DC2626","#D4A843","#2563EB","#16A34A","#F1F5F9"],
       sparkle: false,
     },
   },
@@ -376,7 +376,7 @@ export default function KShowdown() {
   return (
     <div style={{ minHeight:"100vh", background:T.bg, color:T.text, fontFamily:T.font, overflowX:"hidden", position:"relative" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&family=Bebas+Neue&family=DM+Sans:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&family=DM+Sans:wght@500;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-thumb{background:${T.scrollThumb};border-radius:4px;}
