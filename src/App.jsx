@@ -403,32 +403,42 @@ export default function KShowdown() {
           </div>
           <div style={{ fontSize:"clamp(22px,6vw,38px)", fontWeight:800, letterSpacing:"2px", marginBottom:16, background:"linear-gradient(90deg,#FF7EB3,#A78BFA)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>{region} Region</div>
           <div style={{ overflowX:"auto", paddingBottom:16 }}>
-            <div style={{ display:"flex", gap:8, minWidth:700, alignItems:"flex-start" }}>
-              {rounds.map((games, ri) => {
-                const gap = Math.pow(2,ri)*74-74+10;
-                return (<div key={ri} style={{ flex:1, minWidth:105, display:"flex", flexDirection:"column" }}>
-                  <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:"1px", color:"#C4A0C4", marginBottom:8, textAlign:"center", height:32, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontWeight:700 }}>{ROUND_NAMES[ri]}<br/><span style={{ color:"#A78BFA", fontSize:9 }}>+{ROUND_PTS[ri]}pt</span></div>
-                  <div style={{ display:"flex", flexDirection:"column" }}>
-                    {games.map((game, gi) => (
-                      <div key={game.id} style={{ marginTop:gi===0?0:`${gap}px`, display:"flex", flexDirection:"column", gap:3 }}>
-                        {[game.tA, game.tB].map((team, ti) => {
-                          if (!team) return <div key={ti} style={{ height:40, background:"rgba(255,255,255,.4)", border:"1.5px dashed #E8D6FF", borderRadius:10, marginBottom:1 }} />;
-                          const mp=picks[ap]?.[game.id]===team.n, otherP=PLAYERS.filter(p=>p!==ap&&picks[p]?.[game.id]===team.n);
-                          const tc=getTeamColor(team.n), logo=getTeamLogo(team.n);
-                          return (<button key={ti} className="tr" onClick={()=>makePick(region,ri,gi,team.n)} style={{ background:mp?`linear-gradient(135deg,${cl.bg},${cl.bg}cc)`:"rgba(255,255,255,.65)", border:mp?`2px solid ${cl.bg}`:"1.5px solid #F0E6F0", borderLeft:mp?`2px solid ${cl.bg}`:`3px solid ${tc}`, borderRadius:10, padding:"5px 8px", display:"flex", alignItems:"center", gap:5, color:mp?cl.text:"#5D4B5D", width:"100%", boxShadow:mp?`0 3px 16px ${cl.glow}`:"0 1px 4px rgba(0,0,0,.03)", textAlign:"left", marginBottom:1, backdropFilter:mp?"none":"blur(8px)" }}>
-                            {logo && <img src={logo} alt="" style={{ width:20, height:20, borderRadius:4, objectFit:"contain", flexShrink:0 }} />}
-                            <span style={{ fontSize:9, fontWeight:800, background:mp?"rgba(255,255,255,.25)":"#F5EFF5", color:mp?"#fff":"#A08BA0", borderRadius:5, padding:"2px 5px", minWidth:18, textAlign:"center", fontFamily:"'DM Sans',sans-serif", flexShrink:0 }}>{team.s}</span>
-                            <span style={{ fontSize:"clamp(9px,2vw,11px)", fontWeight:700, flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{team.n}</span>
-                            <div style={{ display:"flex", gap:3, flexShrink:0 }}>{otherP.map(o=><div key={o} title={o} style={{ width:7, height:7, borderRadius:"50%", background:COLORS[o].bg, boxShadow:`0 0 4px ${COLORS[o].glow}` }} />)}</div>
-                            {mp && <span style={{ fontSize:11, flexShrink:0 }}>&#10003;</span>}
-                          </button>);
-                        })}
-                      </div>
-                    ))}
-                  </div>
-                </div>);
-              })}
-            </div>
+            {(() => {
+              const TEAM_H = 46;
+              const GAME_GAP = 4;
+              const MATCHUP_GAP = 12;
+              const GAME_H = TEAM_H * 2 + GAME_GAP;
+              const totalH = GAME_H * 8 + MATCHUP_GAP * 7;
+              return (
+              <div style={{ display:"flex", gap:10, minWidth:780, alignItems:"stretch", height:totalH }}>
+                {rounds.map((games, ri) => {
+                  const gamesInRound = games.length;
+                  const slotH = totalH / gamesInRound;
+                  return (<div key={ri} style={{ flex:1, minWidth:120, display:"flex", flexDirection:"column" }}>
+                    <div style={{ fontFamily:"'DM Sans',sans-serif", fontSize:10, letterSpacing:"1px", color:"#C4A0C4", marginBottom:8, textAlign:"center", height:32, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontWeight:700, flexShrink:0 }}>{ROUND_NAMES[ri]}<br/><span style={{ color:"#A78BFA", fontSize:9 }}>+{ROUND_PTS[ri]}pt</span></div>
+                    <div style={{ display:"flex", flexDirection:"column", flex:1 }}>
+                      {games.map((game, gi) => (
+                        <div key={game.id} style={{ height:slotH, display:"flex", flexDirection:"column", justifyContent:"center", gap:GAME_GAP }}>
+                          {[game.tA, game.tB].map((team, ti) => {
+                            if (!team) return <div key={ti} style={{ height:TEAM_H, background:"rgba(255,255,255,.4)", border:"1.5px dashed #E8D6FF", borderRadius:12 }} />;
+                            const mp=picks[ap]?.[game.id]===team.n, otherP=PLAYERS.filter(p=>p!==ap&&picks[p]?.[game.id]===team.n);
+                            const tc=getTeamColor(team.n), logo=getTeamLogo(team.n);
+                            return (<button key={ti} className="tr" onClick={()=>makePick(region,ri,gi,team.n)} style={{ height:TEAM_H, background:mp?`linear-gradient(135deg,${cl.bg},${cl.bg}cc)`:"rgba(255,255,255,.65)", border:mp?`2px solid ${cl.bg}`:"1.5px solid #F0E6F0", borderLeft:mp?`2px solid ${cl.bg}`:`3.5px solid ${tc}`, borderRadius:12, padding:"6px 10px", display:"flex", alignItems:"center", gap:7, color:mp?cl.text:"#5D4B5D", width:"100%", boxShadow:mp?`0 3px 16px ${cl.glow}`:"0 1px 4px rgba(0,0,0,.03)", textAlign:"left", backdropFilter:mp?"none":"blur(8px)" }}>
+                              {logo && <img src={logo} alt="" style={{ width:28, height:28, borderRadius:5, objectFit:"contain", flexShrink:0 }} />}
+                              <span style={{ fontSize:10, fontWeight:800, background:mp?"rgba(255,255,255,.25)":"#F5EFF5", color:mp?"#fff":"#A08BA0", borderRadius:5, padding:"2px 6px", minWidth:20, textAlign:"center", fontFamily:"'DM Sans',sans-serif", flexShrink:0 }}>{team.s}</span>
+                              <span style={{ fontSize:"clamp(11px,2.2vw,14px)", fontWeight:700, flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{team.n}</span>
+                              <div style={{ display:"flex", gap:3, flexShrink:0 }}>{otherP.map(o=><div key={o} title={o} style={{ width:7, height:7, borderRadius:"50%", background:COLORS[o].bg, boxShadow:`0 0 4px ${COLORS[o].glow}` }} />)}</div>
+                              {mp && <span style={{ fontSize:12, flexShrink:0 }}>&#10003;</span>}
+                            </button>);
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>);
+                })}
+              </div>
+              );
+            })()}
           </div>
           <div className="glass" style={{ marginTop:18, padding:"16px 20px", borderRadius:16, fontFamily:"'DM Sans',sans-serif", fontSize:13, color:"#7D6B7D", lineHeight:1.8 }}>
             <span style={{ color:"#A78BFA", letterSpacing:2, fontSize:11, fontWeight:700 }}>How to Play  </span>
